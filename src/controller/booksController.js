@@ -1,5 +1,6 @@
 
 const booksModel = require('../model/booksModel')
+const moment = require('moment')
 
 const isValid = (str) => {
     if (str === undefined || str == null) return false;
@@ -11,7 +12,7 @@ const nRegex = /^[ A-Za-z]*$/
 const dateMatch = /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/
 exports.createBook = async function (req, res) {
     try {
-        const { title, excerpt, userId, ISBN, category, subcategory, releasedAt } = req.body
+        let { title, excerpt, userId, ISBN, category, subcategory, releasedAt } = req.body
         if (!isValid(title)) {
             return res.status(400).send({ status: false, msg: "Title    cannot be empty" })
         }
@@ -28,10 +29,12 @@ exports.createBook = async function (req, res) {
         if (userId.length !== 24) {
             return res.status(400).send({ status: false, msg: "Invalid userId" })
         }
+
         // const userFound = await usersModel.findOne({ _id: userId })
         // if (!userFound) {
         //     return res.status(400).send({ status: false, msg: "User not found" })
         // }
+
         if (!isValid(ISBN)) {
             return res.status(400).send({ status: false, msg: "ISBN cannot be empty" })
         }
@@ -39,9 +42,7 @@ exports.createBook = async function (req, res) {
         if (foundISBN) {
             return res.status(400).send({ status: false, msg: "This ISBN is already being used" })
         }
-        // if (ISBN.length != 13 || ISBN.length != 17) {
-        //     return res.status(400).send({ status: false, msg: "ISBN is  invalid" })
-        // }
+
         if (!isValid(category)) {
             return res.status(400).send({ status: false, msg: "category cannot be empty" })
         }
@@ -60,7 +61,10 @@ exports.createBook = async function (req, res) {
         if (!dateMatch.test(releasedAt)) {
             return res.status(400).send({ status: false, msg: "releasedAt is in invalid format" })
         }
-        const bookCreated = await booksModel.create({ title, excerpt, userId, ISBN, category, subcategory, releasedAt })
+        let bookCreated = await booksModel.create({ title, excerpt, userId, ISBN, category, subcategory, releasedAt })
+        let noDate = moment().format(releasedAt, "YYYYMMDD")
+        bookCreated = bookCreated.toObject()
+        bookCreated.releasedAt = noDate
         res.status(201).send({ status: true, msg: bookCreated })
     } catch (error) {
         res.status(500).send({ status: false, msg: error.message })
