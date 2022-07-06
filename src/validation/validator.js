@@ -16,11 +16,11 @@ const isValidPhone = (mobile) => {
         return true
 }
 const isValidPincode = (pin) => {
-    if (/^[1-9][0-9]{6}*$/.test(pin))
+    if (/^[1-9][0-9]{5}$}*$/.test(pin))
         return true
 }
 const isValidPassword=(pw)=>{
-    if (/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,15}$/.test(pw))
+    if (/^[a-zA-Z0-9!@#$%^&*]{8,15}$/.test(pw))
     
     return true
 }
@@ -32,6 +32,7 @@ const isValidBody=(body)=>{
     if(/^[a-zA-Z]+(([',. -][a-zA-Z0-9 ])?[a-zA-Z0-9]*)*$/.test(body))
     return true
 }
+
 
 
 
