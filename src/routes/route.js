@@ -1,25 +1,28 @@
 const express = require("express");
 const router = express.Router();
 
-router.post("/register",);
+const userController= require("../controller/userController")
+// const booksController= require("../controller/booksController")
 
-router.post("/login",);
+router.post("/register", userController.createUser);
 
-router.post("/books",);
+router.post("/login",userController.userLogin);
 
-router.get("/books",);
+// router.post("/books",);
 
-router.get("/books/:bookId",);
+// router.get("/books",);
 
-router.put("/books/:bookId",);
+// router.get("/books/:bookId",);
 
-router.delete("/books/:bookId",);
+// router.put("/books/:bookId",);
 
-router.post("/books/:bookId/review",);
+// router.delete("/books/:bookId",);
 
-router.put("/books/:bookId/review/:reviewId",);
+// router.post("/books/:bookId/review",);
 
-router.delete("/books/:bookId/review/:reviewId",);
+// router.put("/books/:bookId/review/:reviewId",);
+
+// router.delete("/books/:bookId/review/:reviewId",);
 
 
 

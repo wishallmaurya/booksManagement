@@ -1,4 +1,4 @@
-const userModel = require("../models/userModel");
+const userModel = require("../model/userModel");
 const jwt = require("jsonwebtoken")
 const { isValidEmail, isValidName, isValidPhone, isValid, isValidPassword,isValidPincode } = require("../validation/validator");
 
@@ -41,7 +41,7 @@ const createUser = async function (req, res) {
         if (checkuniqueemail) return res.status(400).send({ status: false, msg: "This Email Id Already Exists Pls Use Another" })
 
         if (!isValid(data.password)) return res.status(400).send({ status: false, msg: "The Password Attributes should not be empty" })
-        if (!isValidPassword(data.password)) return res.status(400).send({ status: false, msg: "Password is not valid- your password should be 8 to 15 digit long" })
+        if (isValidPassword(data.password)) return res.status(400).send({ status: false, msg: "Password is not valid- your password should be 8 to 15 digit long and contain Uppercase,Lowercase,Symbol and digit" })
 
         if (!isValid(data.address.street)) return res.status(400).send({ status: false, msg: "The Password Attributes should not be empty" })
         
@@ -79,7 +79,7 @@ const userLogin = async function (req, res) {
     if (!isValid(userName) || !isValid(password)) return res.status(400).send({ status: false, msg: "Pls Provide data in Email And Password" })
 
     let user = await userModel.findOne({ $and: [{ email: userName, password: password }] })
-    if (!user) return res.status(404).send({ status: false, msg: "Pls Use Valid Credentials" })
+    if (!user) return res.status(400).send({ status: false, msg: "Pls Use Valid Credentials" })
 
     let token = jwt.sign({
         userId: user._id.toString()

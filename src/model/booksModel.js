@@ -8,11 +8,11 @@ const booksSchema = new mongoose.Schema
         ISBN: { type: String, required: true, unique: true, trim: true },
         category: { type: String, required: true, trim: true },
         subcategory: { type: String, required: true, trim: true },
-        reviews: {type:Number, required: true,default: false},
-        deletedAt: Date,
+        reviews: {type:Number, required: true,default: 0},
+        deletedAt:{ type: String},
         isDeleted: { type: Boolean, default: false },
-        releasedAt: Date,
-        isreleasedAt: { type: Boolean, required: true, default: false },
+        releasedAt: { type: String},
+        
         
     } ,{timestamps:true});
 

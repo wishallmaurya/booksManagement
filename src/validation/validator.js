@@ -20,7 +20,8 @@ const isValidPincode = (pin) => {
         return true
 }
 const isValidPassword=(pw)=>{
-    if (/^[a-zA-Z0-9!@#$%^&*]{8,15}$/.test(pw))
+    if (/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,15}$/.test(pw))
+    
     return true
 }
 const isValidTitle=(title)=>{
