@@ -18,7 +18,7 @@ const reviewSchema = new mongoose.Schema(
         },
 
         reviewAt:{
-            type:Date,
+            type:String,
             required:true,
         },
 
