@@ -15,8 +15,8 @@ const isValidPhone = (mobile) => {
     if (/^([+]\d{2})?\d{10}$/.test(mobile))
         return true
 }
-const isValidPincode = (pin) => {
-    if (/^[1-9][0-9]{6}*$/.test(pin))
+    const isValidPincode = (pin) => {
+      if (/^[1-9][0-9]{5}$}*$/.test(pin))
         return true
 }
 const isValidPassword=(pw)=>{
