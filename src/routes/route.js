@@ -16,9 +16,11 @@ router.get("/books", middleware.authentication, booksController.getBooks);
 
 router.get("/books/:bookId", middleware.authentication, booksController.getBooksById);
 
-router.put("/books/:bookId", middleware.authentication, booksController.updateBook);
+router.put("/books/:bookId", middleware.authentication, middleware.authForDelAndUp, booksController.updateBook);
 
-router.delete("/books/:bookId", middleware.authentication, booksController.deleteBook);
+//middleware.authForDelAndUp,
+
+router.delete("/books/:bookId", middleware.authentication, middleware.authForDelAndUp, booksController.deleteBook);
 
 router.post("/books/:bookId/review", reviewController.createReview);
 
