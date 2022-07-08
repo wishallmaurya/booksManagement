@@ -3,6 +3,7 @@ const booksModel = require('../model/booksModel')
 const moment = require('moment')
 const mongoose = require('mongoose')
 const userModel = require('../model/userModel')
+const reviewModel = require('../model/reviewModel')
 
 const isValid = (str) => {
     if (str === undefined || str == null) return false;
@@ -134,10 +135,18 @@ const getBooksById = async function (req, res) {
             let data = await booksModel.findById({ _id: bookId })
             if (!data) return res.status(400).send({ status: false, msg: "The bookId is invalid" })
             obj.bookId = bookId
-            console.log(bookId)
         }
 
         let data = await booksModel.findOne(obj)
+        let reFound = await reviewModel.find({ bookId }).select({ _id: 1, bookId: 1, reviewedBy: 1, createdAt: 1, rating: 1, review: 1 })
+
+        data = data.toObject()
+        reFound = reFound[0].toObject()
+        reviewedAt = reFound.createdAt
+        delete reFound.createdAt
+        reFound.reviewedAt = reviewedAt
+        data.reviewsData = reFound
+        // console.log(data)
 
         if (data.length == 0) {
             return res.status(400).send({ status: false, msg: "No book Found with provided information...Pls Check The Upper And Lower Cases Of letter" })
