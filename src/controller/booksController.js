@@ -77,63 +77,64 @@ exports.createBook = async function (req, res) {
 
 //___________Get /books______________
 //By userId By category By subcategory
-const getBooks = async function (req, res) {
-    try {
+// const getBooks = async function (req, res) {
+//     try {
 
-        let { userId, category, subcategory } = req.query
-        let obj = {
-            isDeleted: false
-        }
+//         let { userId, category, subcategory } = req.query
+//         let obj = {
+//             isDeleted: false
+//         }
 
-        if (userId) {
-            if (userId.trim().length == 0) return res.status(400).send({ status: false, msg: "Dont Left userId Query Empty" })
-            if (!mongoose.isValidObjectId(userId)) return res.status(400).send({ status: false, msg: "The Format of userId is invalid" })
-            let data = await userModel.findById({ _id: userId })
-            if (!data) return res.status(400).send({ status: false, msg: "The userId is invalid" })
-            obj.userId = userId
-        }
+//         if (userId) {
+//             if (userId.trim().length == 0) return res.status(400).send({ status: false, msg: "Dont Left userId Query Empty" })
+//             if (!mongoose.isValidObjectId(userId)) return res.status(400).send({ status: false, msg: "The Format of userId is invalid" })
+//             let data = await userModel.findById({ _id: userId })
+//             if (!data) return res.status(400).send({ status: false, msg: "The userId is invalid" })
+//             obj.userId = userId
+//         }
 
-        if (category) {
-            if (category.trim().length == 0) return res.status(400).send({ status: false, msg: "Dont Left Category Query Empty" })
-            obj.category = category.trim
-            category = category.split(" ").join("")
-        }
+//         if (category) {
+//             if (category.trim().length == 0) return res.status(400).send({ status: false, msg: "Dont Left Category Query Empty" })
+//             obj.category = category.trim
+//             category = category.split(" ").join("")
+//         }
 
 
-        if (subcategory) {
-            if (subcategory.trim().length == 0) return res.status(400).send({ status: false, msg: "Dont Left subcategory Query Empty" })
-            obj.subcategory = subcategory.trim()
-        }
+//         if (subcategory) {
+//             if (subcategory.trim().length == 0) return res.status(400).send({ status: false, msg: "Dont Left subcategory Query Empty" })
+//             obj.subcategory = subcategory.trim()
+//         }
 
-        let data = await booksModel.find(obj)
-        if (data.length == 0) {
-            return res.status(404).send({ status: false, msg: "No book Found with provided information...Pls Check The Upper And Lower Cases Of letter" })
-        }
-        else {
-            return res.status(200).send({ status: true, msg: data })
-        }
-    }
-    catch (err) {
-        console.log(err)
-        res.status(500).send({ status: false, msg: err.message })
-    }
-}
+//         let data = await booksModel.find(obj)
+//         if (data.length == 0) {
+//             return res.status(404).send({ status: false, msg: "No book Found with provided information...Pls Check The Upper And Lower Cases Of letter" })
+//         }
+//         else {
+//             return res.status(200).send({ status: true, msg: data })
+//         }
+//     }
+//     catch (err) {
+//         console.log(err)
+//         res.status(500).send({ status: false, msg: err.message })
+//     }
+// }
 
 //Get books By id
 const getBooksById = async function (req, res) {
     try {
 
         let { bookId } = req.params
-        console.log(bookId)
+
         let obj = {
             isDeleted: false
         }
         if (bookId) {
             if (bookId.trim().length == 0) return res.status(400).send({ status: false, msg: "Dont Left bookId Query Empty" })
             if (!mongoose.isValidObjectId(bookId)) return res.status(400).send({ status: false, msg: "The Format of bookId is invalid" })
-            let data = await userModel.findById({ _id: bookId })
+            let data = await booksModel.findById({ _id: bookId })
             if (!data) return res.status(400).send({ status: false, msg: "The bookId is invalid" })
             obj.bookId = bookId
+            console.log(bookId)
         }
 
         let data = await booksModel.findOne(obj)
@@ -209,6 +210,50 @@ const deleteBook = async function (req, res) {
     }
     catch (err) {
         res.status(500).send({ msg: "Error", error: err.message })
+    }
+}
+
+//By userId By category By subcategory
+const getBooks = async function (req, res) {
+    try {
+
+        let { userId, category, subcategory } = req.query
+        let obj = {
+            isDeleted: false
+        }
+
+        if (userId) {
+            if (userId.trim().length == 0) return res.status(400).send({ status: false, msg: "Dont Left userId Query Empty" })
+            if (!mongoose.isValidObjectId(userId)) return res.status(400).send({ status: false, msg: "The Format of userId is invalid" })
+            let data = await userModel.findById({ _id: userId })
+            if (!data) return res.status(400).send({ status: false, msg: "The userId is invalid" })
+            obj.userId = userId
+        }
+
+        if (category) {
+            if (category.trim().length == 0) return res.status(400).send({ status: false, msg: "Dont Left Category Query Empty" })
+            obj.category = category
+
+        }
+
+
+        if (subcategory) {
+            if (subcategory.trim().length == 0) return res.status(400).send({ status: false, msg: "Dont Left subcategory Query Empty" })
+            obj.subcategory = subcategory.trim()
+        }
+        console.log(obj)
+        let data = await booksModel.find(obj)
+        console.log(obj)
+        if (data.length == 0) {
+            return res.status(404).send({ status: false, msg: "No book Found with provided information...Pls Check The Upper And Lower Cases Of letter" })
+        }
+        else {
+            return res.status(200).send({ status: true, msg: data })
+        }
+    }
+    catch (err) {
+        console.log(err)
+        res.status(500).send({ status: false, msg: err.message })
     }
 }
 

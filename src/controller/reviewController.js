@@ -60,7 +60,7 @@ exports.editReview = async function (req, res) {
         const curVal = mongoose.Types.ObjectId.isValid(currentId)
         const curBook = mongoose.Types.ObjectId.isValid(bookId)
         if (!curVal) return res.status(404).send({ status: false, msg: "review not found" })
-        if (!curBook) return res.status(404).send({ status: false, msg: "review not found" })
+        if (!curBook) return res.status(404).send({ status: false, msg: "Book not found" })
         if (currentId.length !== 24) { return res.status(400).send({ status: false, msg: "Invalid review Id" }) }
         if (bookId.length !== 24) return res.status(400).send({ status: false, msg: "Invalid book Id" })
         const bookIdFound = await booksModel.findOne({ isDeleted: false, _id: bookId })
