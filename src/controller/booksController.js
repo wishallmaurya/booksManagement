@@ -138,16 +138,9 @@ const getBooksById = async function (req, res) {
         }
 
         let data = await booksModel.findOne(obj)
-        let reFound = await reviewModel.find({ bookId }).select({ _id: 1, bookId: 1, reviewedBy: 1, createdAt: 1, rating: 1, review: 1 })
-
+        let reFound = await reviewModel.find({ bookId }).select({ _id: 1, bookId: 1, reviewedBy: 1, reviewAt: 1, rating: 1, review: 1 })
         data = data.toObject()
-        reFound = reFound[0].toObject()
-        reviewedAt = reFound.createdAt
-        delete reFound.createdAt
-        reFound.reviewedAt = reviewedAt
         data.reviewsData = reFound
-        // console.log(data)
-
         if (data.length == 0) {
             return res.status(400).send({ status: false, msg: "No book Found with provided information...Pls Check The Upper And Lower Cases Of letter" })
         }
@@ -244,15 +237,11 @@ const getBooks = async function (req, res) {
             obj.category = category
 
         }
-
-
         if (subcategory) {
             if (subcategory.trim().length == 0) return res.status(400).send({ status: false, msg: "Dont Left subcategory Query Empty" })
             obj.subcategory = subcategory.trim()
         }
-        console.log(obj)
         let data = await booksModel.find(obj)
-        console.log(obj)
         if (data.length == 0) {
             return res.status(404).send({ status: false, msg: "No book Found with provided information...Pls Check The Upper And Lower Cases Of letter" })
         }
