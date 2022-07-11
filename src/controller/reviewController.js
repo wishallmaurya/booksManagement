@@ -22,13 +22,19 @@ exports.validationForReview = (req, res) => {
 
 const validationsReviewEdirAndDelete = async (req, res) => {
     const currentId = req.params.reviewId
+    console.log(currentId)
     const bookId = req.params.bookId
-    if (currentId.length !== 24) { return res.status(400).send({ status: false, msg: "Invalid review Id" }) }
-    if (bookId.length !== 24) return res.status(400).send({ status: false, msg: "Invalid book Id" })
-    const bookIdFound = await booksModel.findOne({ isDeleted: false, _id: bookId })
+    const curVal = mongoose.Types.ObjectId.isValid(currentId)
+    const curBook = mongoose.Types.ObjectId.isValid(bookId)
+    if (!curVal) return res.status(404).send({ status: false, msg: "review not found" })
+    if (!curBook) return res.status(404).send({ status: false, msg: "Book not found" })
+    const bookIdFound = await booksModel.findOne({ isDeleted: false, _id: bookId }).select({ _id: 1 })
     if (!bookIdFound) { return res.status(404).send({ status: false, msg: "Book not found" }) }
-    const userIdFound = await reviewModel.findOne({ isDeleted: false, _id: currentId })
+    const userIdFound = await reviewModel.findOne({ isDeleted: false, _id: currentId }).select({ bookId: 1 })
     if (!userIdFound) { return res.status(404).send({ status: false, msg: "review not found" }) }
+    if (bookIdFound._id.toString() != userIdFound.bookId.toString()) {
+        return res.status(404).send({ status: false, msg: "review not found" })
+    }
 
 }
 
@@ -38,7 +44,6 @@ exports.createReview = async function (req, res) {
     const curBook = mongoose.Types.ObjectId.isValid(book)
     if (!curBook) return res.status(400).send({ status: false, msg: "book is invalid" })
     if (!book) return res.status(400).send({ status: false, msg: "Book id musst be presennt" })
-    if (book.length != 24) return res.status(400).send({ status: false, msg: "Book id is invalid" })
     const bookExist = await booksModel.findOne({ _id: book, isDeleted: false })
     if (bookExist == null || bookExist == undefined) return res.status(404).send({ status: false, msg: "Book not found" })
     const { review, rating, reviewedBy } = req.body
@@ -50,12 +55,13 @@ exports.createReview = async function (req, res) {
     const formatedDate = moment(Date.now()).toISOString()
     const revieCreated = await reviewModel.create({ reviewedBy: reviewedBy, rating, review, reviewAt: formatedDate, bookId: book })
     await booksModel.findByIdAndUpdate(book, { $inc: { reviews: 1 } })
-    res.status(201).send({ status: true, msg: revieCreated })
+    res.status(201).send({ status: true, msg: "Success", data: revieCreated })
 }
 
 exports.editReview = async function (req, res) {
     try {
         const currentId = req.params.reviewId
+        console.log(currentId)
         const bookId = req.params.bookId
         const curVal = mongoose.Types.ObjectId.isValid(currentId)
         const curBook = mongoose.Types.ObjectId.isValid(bookId)
@@ -63,9 +69,9 @@ exports.editReview = async function (req, res) {
         if (!curBook) return res.status(404).send({ status: false, msg: "Book not found" })
         const bookIdFound = await booksModel.findOne({ isDeleted: false, _id: bookId }).select({ _id: 1 })
         if (!bookIdFound) { return res.status(404).send({ status: false, msg: "Book not found" }) }
-        const userIdFound = await reviewModel.findOne({ isDeleted: false, _id: currentId }).select({ _id: 1 })
+        const userIdFound = await reviewModel.findOne({ isDeleted: false, _id: currentId }).select({ bookId: 1 })
         if (!userIdFound) { return res.status(404).send({ status: false, msg: "review not found" }) }
-        if (bookIdFound._id.toString() != userIdFound._id.toString()) {
+        if (bookIdFound._id.toString() != userIdFound.bookId.toString()) {
             return res.status(404).send({ status: false, msg: "review not found" })
         }
         const { review, rating, reviewedBy } = req.body
@@ -83,14 +89,15 @@ exports.deleteReview = async function (req, res) {
         const bookId = req.params.bookId
         const curVal = mongoose.Types.ObjectId.isValid(currentId)
         const curBook = mongoose.Types.ObjectId.isValid(bookId)
-        if (!curVal) return res.status(404).send({ status: false, msg: "review Id is incorrect" })
-        if (!curBook) return res.status(404).send({ status: false, msg: "book Id is incorrect" })
-        if (currentId.length !== 24) { return res.status(400).send({ status: false, msg: "Invalid review Id" }) }
-        if (bookId.length !== 24) return res.status(400).send({ status: false, msg: "Invalid book Id" })
+        if (!curVal) return res.status(400).send({ status: false, msg: "review Id is incorrect" })
+        if (!curBook) return res.status(400).send({ status: false, msg: "book Id is incorrect" })
         const bookIdFound = await booksModel.findOne({ isDeleted: false, _id: bookId })
         if (!bookIdFound) { return res.status(404).send({ status: false, msg: "Book not found" }) }
         const userIdFounds = await reviewModel.findOne({ isDeleted: false, _id: currentId })
         if (!userIdFounds) { return res.status(404).send({ status: false, msg: "review not found" }) }
+        if (bookIdFound._id.toString() != userIdFounds.bookId.toString()) {
+            return res.status(404).send({ status: false, msg: "review not found" })
+        }
         await reviewModel.findOneAndUpdate({ _id: currentId }, { $set: { isDeleted: true } })
         await booksModel.findOneAndUpdate({ _id: bookId }, { $inc: { reviews: -1 } })
         res.status(200).send({ status: true, msg: "deledted" })

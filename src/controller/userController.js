@@ -1,6 +1,6 @@
 const userModel = require("../model/userModel");
 const jwt = require("jsonwebtoken")
-const { isValidEmail, isValidName, isValidPhone, isValid, isValidPassword,isValidPincode } = require("../validation/validator");
+const { isValidEmail, isValidName, isValidPhone, isValid, isValidPassword, isValidPincode } = require("../validation/validator");
 
 
 const createUser = async function (req, res) {
@@ -41,26 +41,15 @@ const createUser = async function (req, res) {
         if (checkuniqueemail) return res.status(400).send({ status: false, msg: "This Email Id Already Exists Pls Use Another" })
 
         if (!isValid(data.password)) return res.status(400).send({ status: false, msg: "The Password Attributes should not be empty" })
-        
+
         if (!isValidPassword(data.password)) return res.status(400).send({ status: false, msg: "Password is not valid- your password should be 8 to 15 digit long and contain Uppercase,Lowercase,Symbol and digit" })
 
-        if (!isValid(data.address.street)) return res.status(400).send({ status: false, msg: "The Address Attributes should not be empty" })
-        
-        if (!isValid(data.address.city)) return res.status(400).send({ status: false, msg: "The address Attributes should not be empty" })
         if (!isValidName(data.address.city)) return res.status(400).send({ status: false, msg: "Pls Enter Valid city Name" })
 
-        if (!isValid(data.address.pincode)) return res.status(400).send({ status: false, msg: "The Pincode Attributes should not be empty" })
         if (!isValidPincode(data.address.pincode)) return res.status(400).send({ status: false, msg: "Pls Enter Valid Pincode" })
 
-        
-
-
-
-
-
-
         let savedData = await userModel.create(data);
-        res.status(201).send({ status: true, msg: "user Created Successfully", data: savedData });
+        res.status(201).send({ status: true, msg: "Success", data: savedData });
     }
 
     catch (error) {
@@ -86,7 +75,7 @@ const userLogin = async function (req, res) {
         userId: user._id.toString()
     }, "functionup-radon")
 
-    res.status(200).send({ status: true, token: token, msg: "Succesfully Login" })
+    res.status(200).send({ status: true, msg: "succes", token: token })
 
 }
 

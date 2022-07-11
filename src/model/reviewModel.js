@@ -12,7 +12,7 @@ const reviewSchema = new mongoose.Schema(
         reviewedBy: {
             type: String,
             required: true,
-            default: 0
+            default: 'Guest'
         },
 
         reviewAt: {
@@ -33,7 +33,7 @@ const reviewSchema = new mongoose.Schema(
             default: false
         }
 
-    }, { timestamps: true }
+    }
 );
 
 module.exports = mongoose.model("Review", reviewSchema)
