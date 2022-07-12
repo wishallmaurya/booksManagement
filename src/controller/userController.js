@@ -12,9 +12,6 @@ const createUser = async function (req, res) {
             return res.status(400).send({ msg: "Body should not be empty" })
         }
         
-
-        if (!("title" in data) || !("name" in data) || !("phone" in data) || !("email" in data) || !("password" in data)) return res.status(400).send({ status: false, msg: "title,name,phone,email,password and address all are required" })
-
         if (!isValid(data.title)) return res.status(400).send({ status: false, msg: "The Title Attributes should not be empty" })
         if (title !== "Mr") {
             if (title !== "Mrs") {
@@ -43,7 +40,7 @@ const createUser = async function (req, res) {
 
         if (!isValid(data.password)) return res.status(400).send({ status: false, msg: "The Password Attributes should not be empty" })
 
-        if (!isValidPassword(data.password)) return res.status(400).send({ status: false, msg: "Password is not valid- your password should be 8 to 15 digit long and contain Uppercase,Lowercase,Symbol and digit" })
+        if (!isValidPassword(data.password)) return res.status(400).send({ status: false, msg: "Password is not valid- your password should be 8 to 15 digit long" })
         if (req.body.address) {
             if (!isValidName(req.body.address.city)) return res.status(400).send({ status: false, msg: "Pls Enter Valid city Name" })
             if(req.body.address.street!=undefined)
@@ -67,13 +64,12 @@ const userLogin = async function (req, res) {
     let value = req.body
     let userName = value.email
     let password = value.password
-    //................................................... Empty Body Validation 
-    if (!("email" in value) || !("password" in value)) return res.status(400).send({ status: false, msg: "Pls Enter Email And Password" })
+   
     //....................................................Empty Attributes Validation
-    if (!isValid(userName) || !isValid(password)) return res.status(400).send({ status: false, msg: "Pls Provide data in Email And Password" })
+    if (!isValid(userName) || !isValid(password)) return res.status(400).send({ status: false, msg: "Pls Provide  Email And Password both" })
 
     let user = await userModel.findOne({ $and: [{ email: userName, password: password }] })
-    if (!user) return res.status(400).send({ status: false, msg: "Pls Use Valid Credentials" })
+    if (!user) return res.status(400).send({ status: false, msg: "The email or Password you are using is wrong" })
 
     let token = jwt.sign({
         userId: user._id.toString()
