@@ -76,6 +76,7 @@ exports.editReview = async function (req, res) {
         const { review, rating, reviewedBy } = req.body
         let red = req.body
         if (!Object.keys(red).length) return res.status(400).send({ status: false, msg: "reviewedBy and rating must be present" })
+        if (!isValid(reviewedBy)) return res.status(400).send({ status: false, msg: "reviewedBy cannot be empty" })
         let reviewEdited = await reviewModel.findOneAndUpdate({ _id: currentId }, { $set: { reviewedBy, review, rating } }, { new: true })
         let bookFound = await booksModel.findOne({ _id: bookId })
         let showResult = savedData(reviewEdited)
