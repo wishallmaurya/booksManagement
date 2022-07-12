@@ -49,6 +49,7 @@ exports.createReview = async function (req, res) {
     const bookExist = await booksModel.findOne({ _id: book, isDeleted: false })
     if (bookExist == null || bookExist == undefined) return res.status(404).send({ status: false, msg: "Book not found" })
     let { review, rating, reviewedBy } = req.body
+    if (!rating || !reviewedBy) return res.status(400).send({ status: false, msg: "reviewedBy and rating must be present" })
     console.log(reviewedBy.trim() == 0)
     if (!isValid(rating)) return res.status(400).send({ status: false, msg: "rating cannot be empty" })
     if (!rexrating.test(rating)) return res.status(400).send({ status: false, msg: "rating mustbe 1 to 5" })
@@ -72,6 +73,7 @@ exports.editReview = async function (req, res) {
         const currentId = req.params.reviewId
         const bookId = req.params.bookId
         const { review, rating, reviewedBy } = req.body
+        if (!rating || !reviewedBy) return res.status(400).send({ status: false, msg: "reviewedBy and rating must be present" })
         let reviewEdited = await reviewModel.findOneAndUpdate({ _id: currentId }, { $set: { reviewedBy, review, rating } }, { new: true })
         let bookFound = await booksModel.findOne({ _id: bookId })
         let showResult = savedData(reviewEdited)
