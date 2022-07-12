@@ -49,32 +49,33 @@ exports.createReview = async function (req, res) {
     const bookExist = await booksModel.findOne({ _id: book, isDeleted: false })
     if (bookExist == null || bookExist == undefined) return res.status(404).send({ status: false, msg: "Book not found" })
     let { review, rating, reviewedBy } = req.body
+    console.log(reviewedBy.trim() == 0)
     if (!isValid(rating)) return res.status(400).send({ status: false, msg: "rating cannot be empty" })
     if (!rexrating.test(rating)) return res.status(400).send({ status: false, msg: "rating mustbe 1 to 5" })
-    if (reviewedBy) {
-        if (reviewedBy.trim() == 0) {
-            reviewedBy = 'Guest'
-        }
-        if (!nRegex.test(reviewedBy)) return res.status(400).send({ status: false, msg: "reviewedBy is invalid" })
+    if (reviewedBy.trim() == 0) {
+        reviewedBy = 'Guest'
+        console.log(reviewedBy)
     }
-
+    if (!nRegex.test(reviewedBy)) return res.status(400).send({ status: false, msg: "reviewedBy is invalid" })
     const formatedDate = moment(Date.now()).toISOString()
-    let revieCreated = await reviewModel.create({ reviewedBy: reviewedBy, rating, review, reviewAt: formatedDate, bookId: book })
+    let revieCreated = await reviewModel.create({ reviewedBy: reviewedBy, rating, review, reviewedAt: formatedDate, bookId: book })
     revieCreated = revieCreated.toObject()
     let showResult = savedData(revieCreated)
     let fBook = await booksModel.findByIdAndUpdate(book, { $inc: { reviews: 1 } })
-    console.log(fBook)
-    res.status(201).send({ status: true, msg: "Success", data: showResult })
+    fBook = fBook.toObject()
+    fBook.reviewsData = showResult
+    res.status(201).send({ status: true, msg: "Success", data: fBook })
 }
 
 exports.editReview = async function (req, res) {
     try {
         const currentId = req.params.reviewId
         const { review, rating, reviewedBy } = req.body
-        const reviewEdited = await reviewModel.findOneAndUpdate({ _id: currentId }, { $set: { reviewedBy, review, rating } }, { new: true })
+        let reviewEdited = await reviewModel.findOneAndUpdate({ _id: currentId }, { $set: { reviewedBy, review, rating } }, { new: true })
         let showResult = savedData(reviewEdited)
-
-        res.status(200).send({ status: true, msg: "Success", data: showResult })
+        reviewEdited = reviewEdited.toObject()
+        reviewEdited.reviewsData = showResult
+        res.status(200).send({ status: true, msg: "Success", data: reviewEdited })
     } catch (error) {
         res.status(500).send({ status: false, msg: error.message })
     }
