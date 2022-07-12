@@ -21,8 +21,6 @@ router.get("/books", middleware.authentication, booksController.getBooks);
 
 router.get("/books/:bookId", middleware.authentication, booksController.getBooksById);
 
-//only getting book of "Spider Man 5" ==corrected
-
 
 
 router.put("/books/:bookId", middleware.authentication, middleware.authForDelAndUp, booksController.updateBook);
@@ -33,9 +31,9 @@ router.delete("/books/:bookId", middleware.authentication, middleware.authForDel
 
 router.post("/books/:bookId/review", reviewController.createReview);
 
-router.put("/books/:bookId/review/:reviewId", reviewController.editReview);
+router.put("/books/:bookId/review/:reviewId", reviewController.validationsReviewEdirAndDelete, reviewController.editReview);
 
-router.delete("/books/:bookId/review/:reviewId", reviewController.deleteReview);
+router.delete("/books/:bookId/review/:reviewId", reviewController.validationsReviewEdirAndDelete, reviewController.deleteReview);
 
 
 

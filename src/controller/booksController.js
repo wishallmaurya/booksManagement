@@ -10,7 +10,6 @@ const isValid = (str) => {
     if (typeof str == "string" && str.trim().length == 0) return false;
     return true;
 }
-const rexIsbn = /^(?:ISBN(?:-1[03])?:?●)?(?=[0-9X]{10}$|(?=(?:[0-9]+[-●]){3})[-●0-9X]{13}$|97[89][0-9]{10}$|(?=(?:[0-9]+[-●]){4})[-●0-9]{17}$)(?:97[89][-●]?)?[0-9]{1,5}[-●]?[0-9]+[-●]?[0-9]+[-●]?[0-9X]$/
 const nRegex = /^[ A-Za-z]*$/
 const dateMatch = /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/
 exports.createBook = async function (req, res) {
@@ -79,49 +78,6 @@ exports.createBook = async function (req, res) {
 
 }
 
-//___________Get /books______________
-//By userId By category By subcategory
-// const getBooks = async function (req, res) {
-//     try {
-
-//         let { userId, category, subcategory } = req.query
-//         let obj = {
-//             isDeleted: false
-//         }
-
-//         if (userId) {
-//             if (userId.trim().length == 0) return res.status(400).send({ status: false, msg: "Dont Left userId Query Empty" })
-//             if (!mongoose.isValidObjectId(userId)) return res.status(400).send({ status: false, msg: "The Format of userId is invalid" })
-//             let data = await userModel.findById({ _id: userId })
-//             if (!data) return res.status(400).send({ status: false, msg: "The userId is invalid" })
-//             obj.userId = userId
-//         }
-
-//         if (category) {
-//             if (category.trim().length == 0) return res.status(400).send({ status: false, msg: "Dont Left Category Query Empty" })
-//             obj.category = category.trim
-//             category = category.split(" ").join("")
-//         }
-
-
-//         if (subcategory) {
-//             if (subcategory.trim().length == 0) return res.status(400).send({ status: false, msg: "Dont Left subcategory Query Empty" })
-//             obj.subcategory = subcategory.trim()
-//         }
-
-//         let data = await booksModel.find(obj)
-//         if (data.length == 0) {
-//             return res.status(404).send({ status: false, msg: "No book Found with provided information...Pls Check The Upper And Lower Cases Of letter" })
-//         }
-//         else {
-//             return res.status(200).send({ status: true, msg: data })
-//         }
-//     }
-//     catch (err) {
-//         console.log(err)
-//         res.status(500).send({ status: false, msg: err.message })
-//     }
-// }
 
 //Get books By id
 const getBooksById = async function (req, res) {
@@ -170,23 +126,19 @@ const updateBook = async function (req, res) {
         if (moment(releaseDate) > moment()) return res.status(400).send({ status: false, msg: "releaseDate cannot be in future" })
 
         if (title) {
-
             const checKTitle = await booksModel.findOne({
                 title: title,
             })
-
             if (checKTitle) {
-                return res.status(400).send({ status: false, message: "Book with these title is already present" });
-
+                return res.status(400).send({ status: false, message: "Book with these title is already present" })
             }
-            if (ISBN) {
-                const CheckISBn = await booksModel.findOne({
-                    ISBN: ISBN,
-                });
-                if (CheckISBn)
-                    return res.status(400).send({ status: false, message: "Book with this isbn is already exist" })
-            }
-
+        }
+        if (ISBN) {
+            const CheckISBn = await booksModel.findOne({
+                ISBN: ISBN,
+            });
+            if (CheckISBn)
+                return res.status(400).send({ status: false, message: "Book with this isbn is already exist" })
         }
         const bookData = await booksModel.findOneAndUpdate(
             { _id: bookId },
@@ -207,9 +159,8 @@ const deleteBook = async function (req, res) {
         let bookId = req.params.bookId;
         let find = await booksModel.findById(bookId)
         if (!find) return res.status(400).send({ status: false, msg: "The Id You Have Entered Is doesnot exists" })
-        if (find.isDeleted == true) return res.status(400).send({ status: false, msg: "The Id You have entered is already deleted" })
+        if (find.isDeleted == true) return res.status(404).send({ status: false, msg: "review not found" })
         let date = new Date().toISOString()
-        console.log(find)
         await booksModel.findOneAndUpdate({ _id: bookId }, { $set: { isDeleted: true, deletedAt: date } })
         return res.status(200).send({ status: true, message: 'Success', data: {} });
 

@@ -12,7 +12,7 @@ const createUser = async function (req, res) {
             return res.status(400).send({ msg: "Body should not be empty" })
         }
 
-        if (!("title" in data) || !("name" in data) || !("phone" in data) || !("email" in data) || !("password" in data) || !("address" in data)) return res.status(400).send({ status: false, msg: "title,name,phone,email,password and address all are required" })
+        if (!("title" in data) || !("name" in data) || !("phone" in data) || !("email" in data) || !("password" in data)) return res.status(400).send({ status: false, msg: "title,name,phone,email,password and address all are required" })
 
         if (!isValid(data.title)) return res.status(400).send({ status: false, msg: "The Title Attributes should not be empty" })
         if (title !== "Mr") {
@@ -43,11 +43,13 @@ const createUser = async function (req, res) {
         if (!isValid(data.password)) return res.status(400).send({ status: false, msg: "The Password Attributes should not be empty" })
 
         if (!isValidPassword(data.password)) return res.status(400).send({ status: false, msg: "Password is not valid- your password should be 8 to 15 digit long and contain Uppercase,Lowercase,Symbol and digit" })
-
-        if (!isValidName(data.address.city)) return res.status(400).send({ status: false, msg: "Pls Enter Valid city Name" })
-
-        if (!isValidPincode(data.address.pincode)) return res.status(400).send({ status: false, msg: "Pls Enter Valid Pincode" })
-
+        if (req.body.address) {
+            if (!isValidName(req.body.address.city)) return res.status(400).send({ status: false, msg: "Pls Enter Valid city Name" })
+            if (!isValid(req.body.address.street)) return res.status(400).send({ status: false, msg: "The street Attributes should not be empty" })
+            if (req.body.address.pincode !== undefined) {
+                if (!isValidPincode(req.body.address.pincode)) return res.status(400).send({ status: false, msg: "Pls Enter Valid Pincode" })
+            }
+        }
         let savedData = await userModel.create(data);
         res.status(201).send({ status: true, msg: "Success", data: savedData });
     }
@@ -64,7 +66,6 @@ const userLogin = async function (req, res) {
     let password = value.password
     //................................................... Empty Body Validation 
     if (!("email" in value) || !("password" in value)) return res.status(400).send({ status: false, msg: "Pls Enter Email And Password" })
-
     //....................................................Empty Attributes Validation
     if (!isValid(userName) || !isValid(password)) return res.status(400).send({ status: false, msg: "Pls Provide data in Email And Password" })
 
@@ -75,7 +76,7 @@ const userLogin = async function (req, res) {
         userId: user._id.toString()
     }, "functionup-radon")
 
-    res.status(200).send({ status: true, msg: "succes", token: token })
+    res.status(200).send({ status: true, msg: "success", token: token })
 
 }
 
