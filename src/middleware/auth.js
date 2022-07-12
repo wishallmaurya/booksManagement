@@ -58,6 +58,7 @@ exports.authForDelAndUp = async function (req, res, next) {
   if (!bookId) return res.status(400).send({ status: false, msg: "book id must be present" });
   if (!mongoose.isValidObjectId(bookId)) return res.status(400).send({ status: false, msg: "book id is invalid" });
   const curUser = await booksModel.findOne({ _id: bookId }).select({ _id: 0, userId: 1 })
+  if (curUser == null) return res.status(404).send({ status: false, msg: "The BookId is not found" });
   let decodedtoken = jwt.verify(token, "functionup-radon")
   if (curUser.userId.toString() == decodedtoken.userId) {
     next()

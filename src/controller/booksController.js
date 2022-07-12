@@ -229,6 +229,13 @@ const updateBook = async function (req, res) {
 const deleteBook = async function (req, res) {
     try {
         let bookId = req.params.bookId;
+        if (bookId) {
+            if (bookId.trim().length == 0) return res.status(400).send({ status: false, msg: "Dont Left bookId Query Empty" })
+            if (!mongoose.isValidObjectId(bookId)) return res.status(400).send({ status: false, msg: "The Format of bookId is invalid" })
+            let data = await booksModel.findById(bookId) 
+            if (!data) return res.status(404).send({ status: false, msg: "The bookId is not found" })
+         
+        }
     
         
         let find = await booksModel.findById(bookId)
