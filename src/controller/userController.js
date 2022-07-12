@@ -45,7 +45,9 @@ const createUser = async function (req, res) {
         if (!isValidPassword(data.password)) return res.status(400).send({ status: false, msg: "Password is not valid- your password should be 8 to 15 digit long and contain Uppercase,Lowercase,Symbol and digit" })
         if (req.body.address) {
             if (!isValidName(req.body.address.city)) return res.status(400).send({ status: false, msg: "Pls Enter Valid city Name" })
+            if(req.body.address.street!=undefined)
             if (!isValid(req.body.address.street)) return res.status(400).send({ status: false, msg: "The street Attributes should not be empty" })
+
             if (req.body.address.pincode !== undefined) {
                 if (!isValidPincode(req.body.address.pincode)) return res.status(400).send({ status: false, msg: "Pls Enter Valid Pincode" })
             }

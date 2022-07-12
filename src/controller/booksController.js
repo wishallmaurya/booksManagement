@@ -10,6 +10,7 @@ const isValid = (str) => {
     if (typeof str == "string" && str.trim().length == 0) return false;
     return true;
 }
+const rexIsbn = /^[1-9][0-9]{9,14}$/
 const nRegex = /^[ A-Za-z]*$/
 const dateMatch = /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/
 exports.createBook = async function (req, res) {
@@ -41,7 +42,7 @@ exports.createBook = async function (req, res) {
         if (!isValid(ISBN)) {
             return res.status(400).send({ status: false, msg: "ISBN cannot be empty" })
         }
-        if (!rexIsbn.test(ISBN)) return res.status(400).send({ status: false, msg: "ISBN isinvalid" })
+        if (!rexIsbn.test(ISBN)) return res.status(400).send({ status: false, msg: "ISBN is invalid use 10 to 15 digit ISBN" })
         const foundISBN = await booksModel.findOne({ ISBN })
         if (foundISBN) {
             return res.status(400).send({ status: false, msg: "This ISBN is already being used" })
@@ -193,17 +194,21 @@ const getBooks = async function (req, res) {
         if (category) {
             if (category.trim().length == 0) return res.status(400).send({ status: false, msg: "Dont Left Category Query Empty" })
             obj.category = category
+            category=category.toLowerCase()
+            console.log(category)
 
         }
 
         if (subcategory) {
             if (subcategory.trim().length == 0) return res.status(400).send({ status: false, msg: "Dont Left subcategory Query Empty" })
             obj.subcategory = subcategory
+            subcategory=subcategory.toLowerCase()
+            console.log(subcategory)
         }
 
         let data = await booksModel.find(obj).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, reviews: 1, releasedAt: 1 }).sort({ title: 'asc' })
         if (data.length == 0) {
-            return res.status(404).send({ status: false, msg: "No book Found with provided information...Pls Check The Upper And Lower Cases Of letter" })
+            return res.status(404).send({ status: false, msg: "No book Found with provided information...Pls Use Valid Filters " })
         }
         else {
             return res.status(200).send({ status: true, message: 'Books list', data: data })
@@ -214,44 +219,7 @@ const getBooks = async function (req, res) {
         res.status(500).send({ status: false, msg: err.message })
     }
 }
-// const getBooks = async function (req, res) {
-//     try {
 
-//         let { userId, category, subcategory } = req.query
-//         let obj = {
-//             isDeleted: false
-//         }
-
-//         if (userId) {
-//             if (userId.trim().length == 0) return res.status(400).send({ status: false, msg: "Dont Left userId Query Empty" })
-//             if (!mongoose.isValidObjectId(userId)) return res.status(400).send({ status: false, msg: "The Format of userId is invalid" })
-//             let data = await userModel.findById({ _id: userId })
-//             if (!data) return res.status(400).send({ status: false, msg: "The userId is invalid" })
-//             obj.userId = userId
-//         }
-
-//         if (category) {
-//             if (category.trim().length == 0) return res.status(400).send({ status: false, msg: "Dont Left Category Query Empty" })
-//             obj.category = category
-
-//         }
-//         if (subcategory) {
-//             if (subcategory.trim().length == 0) return res.status(400).send({ status: false, msg: "Dont Left subcategory Query Empty" })
-//             obj.subcategory = subcategory.trim()
-//         }
-//         let data = await booksModel.find(obj).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, reviews: 1, releasedAt: 1 })
-//         if (data.length == 0) {
-//             return res.status(404).send({ status: false, msg: "No book Found with provided information...Pls Check The Upper And Lower Cases Of letter" })
-//         }
-//         else {
-//             return res.status(200).send({ status: true, message: 'Books list', data: data })
-//         }
-//     }
-//     catch (err) {
-//         console.log(err)
-//         res.status(500).send({ status: false, msg: err.message })
-//     }
-// }
 
 module.exports.deleteBook = deleteBook
 module.exports.updateBook = updateBook;
