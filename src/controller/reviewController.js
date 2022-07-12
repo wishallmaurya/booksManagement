@@ -70,12 +70,14 @@ exports.createReview = async function (req, res) {
 exports.editReview = async function (req, res) {
     try {
         const currentId = req.params.reviewId
+        const bookId = req.params.bookId
         const { review, rating, reviewedBy } = req.body
         let reviewEdited = await reviewModel.findOneAndUpdate({ _id: currentId }, { $set: { reviewedBy, review, rating } }, { new: true })
+        let bookFound = await booksModel.findOne({ _id: bookId })
         let showResult = savedData(reviewEdited)
-        reviewEdited = reviewEdited.toObject()
-        reviewEdited.reviewsData = showResult
-        res.status(200).send({ status: true, msg: "Success", data: reviewEdited })
+        bookFound = bookFound.toObject()
+        bookFound.reviewsData = showResult
+        res.status(200).send({ status: true, msg: "Success", data: bookFound })
     } catch (error) {
         res.status(500).send({ status: false, msg: error.message })
     }
