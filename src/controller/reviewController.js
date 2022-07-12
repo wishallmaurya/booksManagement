@@ -73,6 +73,7 @@ exports.editReview = async function (req, res) {
         const { review, rating, reviewedBy } = req.body
         const reviewEdited = await reviewModel.findOneAndUpdate({ _id: currentId }, { $set: { reviewedBy, review, rating } }, { new: true })
         let showResult = savedData(reviewEdited)
+
         res.status(200).send({ status: true, msg: "Success", data: showResult })
     } catch (error) {
         res.status(500).send({ status: false, msg: error.message })

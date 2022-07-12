@@ -30,7 +30,7 @@ exports.createBook = async function (req, res) {
         if (!isValid(userId)) {
             return res.status(400).send({ status: false, msg: "userId cannot be empty" })
         }
-        if (userId.length !== 24) {
+        if (!mongoose.isValidObjectId(userId))  {
             return res.status(400).send({ status: false, msg: "Invalid userId" })
         }
 
@@ -100,7 +100,7 @@ const getBooksById = async function (req, res) {
         let data = await booksModel.findOne(obj)
         let reFound = await reviewModel.find({ bookId }).select({ _id: 1, bookId: 1, reviewedBy: 1, reviewAt: 1, review: 1, rating: 1 })
         if (data == null) {
-            return res.status(404).send({ status: false, msg: "No book Found with provided information...Pls Check The Upper And Lower Cases Of letter" })
+            return res.status(404).send({ status: false, msg: "No book Found with provided information...Use Valid credentials " })
         }
         else {
            

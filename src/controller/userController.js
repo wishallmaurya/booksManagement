@@ -11,6 +11,7 @@ const createUser = async function (req, res) {
         if (Object.keys(data).length == 0) {
             return res.status(400).send({ msg: "Body should not be empty" })
         }
+        
 
         if (!("title" in data) || !("name" in data) || !("phone" in data) || !("email" in data) || !("password" in data)) return res.status(400).send({ status: false, msg: "title,name,phone,email,password and address all are required" })
 

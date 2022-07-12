@@ -16,7 +16,7 @@ const reviewSchema = new mongoose.Schema(
 
         },
 
-        reviewAt: {
+        reviewedAt: {
             type: String,
             required: true,
         },
