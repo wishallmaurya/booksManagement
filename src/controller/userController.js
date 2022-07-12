@@ -77,7 +77,10 @@ const userLogin = async function (req, res) {
 
     let token = jwt.sign({
         userId: user._id.toString()
-    }, "functionup-radon")
+    }, "functionup-radon",
+    {
+        expiresIn: "1h"
+    });
 
     res.status(200).send({ status: true, msg: "success", token: token })
 
