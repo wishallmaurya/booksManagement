@@ -16,8 +16,8 @@ exports.validationsReviewEdirAndDelete = async (req, res, next) => {
     const bookId = req.params.bookId
     const curVal = mongoose.Types.ObjectId.isValid(currentId)
     const curBook = mongoose.Types.ObjectId.isValid(bookId)
-    let red = req.body
-    if (!Object.keys(red).length) return res.status(400).send({ status: false, msg: "reviewedBy and rating must be present" })
+    
+
     if (!curVal) return res.status(400).send({ status: false, msg: "review id is invalid" })
     if (!curBook) return res.status(400).send({ status: false, msg: "Book id is invalid" })
     const bookIdFound = await booksModel.findOne({ isDeleted: false, _id: bookId }).select({ _id: 1 })
@@ -31,16 +31,6 @@ exports.validationsReviewEdirAndDelete = async (req, res, next) => {
 
 }
 
-const savedData = (str) => {
-    let showResult = {}
-    showResult._id = str._id
-    showResult.bookId = str.bookId
-    showResult.reviewedBy = str.reviewedBy
-    showResult.reviewedAt = str.reviewAt
-    showResult.rating = str.rating
-    if (str.review) { showResult.review = str.review }
-    return showResult
-}
 
 
 exports.createReview = async function (req, res) {
@@ -51,7 +41,7 @@ exports.createReview = async function (req, res) {
     const bookExist = await booksModel.findOne({ _id: book, isDeleted: false })
     if (bookExist == null || bookExist == undefined) return res.status(404).send({ status: false, msg: "Book not found" })
     let { review, rating, reviewedBy } = req.body
-    let red = req.body
+    
     if (!Object.keys(req.body).length) return res.status(400).send({ status: false, msg: "reviewedBy and rating must be present" })
     if (!isValid(rating)) return res.status(400).send({ status: false, msg: "rating cannot be empty" })
     if (!rexrating.test(rating)) return res.status(400).send({ status: false, msg: "rating mustbe 1 to 5" })
@@ -62,10 +52,9 @@ exports.createReview = async function (req, res) {
     const formatedDate = moment(Date.now()).toISOString()
     let revieCreated = await reviewModel.create({ reviewedBy: reviewedBy, rating, review, reviewedAt: formatedDate, bookId: book })
     revieCreated = revieCreated.toObject()
-    let showResult = savedData(revieCreated)
     let fBook = await booksModel.findByIdAndUpdate(book, { $inc: { reviews: 1 } })
     fBook = fBook.toObject()
-    fBook.reviewsData = [showResult]
+    fBook.reviewsData = [revieCreated]
     res.status(201).send({ status: true, msg: "Success", data: fBook })
 }
 
@@ -79,9 +68,8 @@ exports.editReview = async function (req, res) {
         if (!isValid(reviewedBy)) return res.status(400).send({ status: false, msg: "reviewedBy cannot be empty" })
         let reviewEdited = await reviewModel.findOneAndUpdate({ _id: currentId }, { $set: { reviewedBy, review, rating } }, { new: true })
         let bookFound = await booksModel.findOne({ _id: bookId })
-        let showResult = savedData(reviewEdited)
         bookFound = bookFound.toObject()
-        bookFound.reviewsData = [showResult]
+        bookFound.reviewsData = [reviewEdited]
         res.status(200).send({ status: true, msg: "Success", data: bookFound })
     } catch (error) {
         res.status(500).send({ status: false, msg: error.message })

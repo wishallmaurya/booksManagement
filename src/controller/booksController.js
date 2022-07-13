@@ -177,7 +177,7 @@ const updateBook = async function (req, res) {
     try {
         const bookId = req.params.bookId;
         const data = req.body;
-        const { title, excerpt, releaseDate, ISBN } = data;
+        const { title, excerpt, releasedAt, ISBN } = data;
         if (bookId) {
             if (bookId.trim().length == 0) return res.status(400).send({ status: false, msg: "Dont Left bookId Query Empty" })
             if (!mongoose.isValidObjectId(bookId)) return res.status(400).send({ status: false, msg: "The Format of bookId is invalid" })
@@ -192,10 +192,10 @@ const updateBook = async function (req, res) {
     
         if (!data) return res.status(400).send({ status: false, msg: "The bookId is invalid" })
 
-        if (!dateMatch.test(releaseDate)) {
-            return res.status(400).send({ status: false, msg: "releaseDate is in invalid format" })
+        if (!dateMatch.test(releasedAt)) {
+            return res.status(400).send({ status: false, msg: "releasedAt is in invalid format" })
         }
-        if (moment(releaseDate) > moment()) return res.status(400).send({ status: false, msg: "releaseDate cannot be in future" })
+        if (moment(releasedAt) > moment()) return res.status(400).send({ status: false, msg: "releasedAt cannot be in future" })
 
         if (title) {
             const checKTitle = await booksModel.findOne({
@@ -214,7 +214,7 @@ const updateBook = async function (req, res) {
         }
         const bookData = await booksModel.findOneAndUpdate(
             { _id: bookId },
-            { title: title, excerpt: excerpt, releaseAt: releaseDate, ISBN: ISBN },
+            { title: title, excerpt: excerpt, releaseAt: releasedAt, ISBN: ISBN },
             { new: true }
         );
 

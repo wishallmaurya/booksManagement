@@ -1,5 +1,4 @@
 const jwt = require("jsonwebtoken");
-const bookModel = require("../model/booksModel");
 const mongoose = require("mongoose");
 const userModel = require("../model/userModel");
 const booksModel = require("../model/booksModel");
@@ -38,6 +37,8 @@ const auth2 = async function (req, res, next) {
   let decodedtoken = jwt.verify(token, "functionup-radon")
   console.log(decodedtoken.userId)
   let id = req.body.userId
+  if (!id) return res.status(400).send({ status: false, msg: "user id must be present" });
+  if (!mongoose.isValidObjectId(req.body.userId)) return res.status(400).send({ status: false, msg: "user id is invalid" });
   if (decodedtoken.userId == id) {
     next()
   }
